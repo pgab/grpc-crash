@@ -186,7 +186,7 @@ impl ::protobuf::reflect::ProtobufValue for CrashRequest {
 #[derive(PartialEq,Clone,Default)]
 pub struct CrashResponse {
     // message fields
-    pub payload: ::std::vec::Vec<f32>,
+    pub payload: ::std::vec::Vec<u8>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -203,10 +203,10 @@ impl CrashResponse {
         ::std::default::Default::default()
     }
 
-    // repeated float payload = 1;
+    // bytes payload = 1;
 
 
-    pub fn get_payload(&self) -> &[f32] {
+    pub fn get_payload(&self) -> &[u8] {
         &self.payload
     }
     pub fn clear_payload(&mut self) {
@@ -214,17 +214,18 @@ impl CrashResponse {
     }
 
     // Param is passed by value, moved
-    pub fn set_payload(&mut self, v: ::std::vec::Vec<f32>) {
+    pub fn set_payload(&mut self, v: ::std::vec::Vec<u8>) {
         self.payload = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_payload(&mut self) -> &mut ::std::vec::Vec<f32> {
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_payload(&mut self) -> &mut ::std::vec::Vec<u8> {
         &mut self.payload
     }
 
     // Take field
-    pub fn take_payload(&mut self) -> ::std::vec::Vec<f32> {
+    pub fn take_payload(&mut self) -> ::std::vec::Vec<u8> {
         ::std::mem::replace(&mut self.payload, ::std::vec::Vec::new())
     }
 }
@@ -239,7 +240,7 @@ impl ::protobuf::Message for CrashResponse {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_repeated_float_into(wire_type, is, &mut self.payload)?;
+                    ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.payload)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -253,16 +254,18 @@ impl ::protobuf::Message for CrashResponse {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        my_size += 5 * self.payload.len() as u32;
+        if !self.payload.is_empty() {
+            my_size += ::protobuf::rt::bytes_size(1, &self.payload);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        for v in &self.payload {
-            os.write_float(1, *v)?;
-        };
+        if !self.payload.is_empty() {
+            os.write_bytes(1, &self.payload)?;
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -305,7 +308,7 @@ impl ::protobuf::Message for CrashResponse {
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeFloat>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
                     "payload",
                     |m: &CrashResponse| { &m.payload },
                     |m: &mut CrashResponse| { &mut m.payload },
@@ -352,7 +355,7 @@ impl ::protobuf::reflect::ProtobufValue for CrashResponse {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n\x0bcrash.proto\"\"\n\x0cCrashRequest\x12\x12\n\x04size\x18\x01\x20\
     \x01(\x04R\x04size\")\n\rCrashResponse\x12\x18\n\x07payload\x18\x01\x20\
-    \x03(\x02R\x07payload28\n\x0cCrashService\x12(\n\x05Crash\x12\r.CrashReq\
+    \x01(\x0cR\x07payload28\n\x0cCrashService\x12(\n\x05Crash\x12\r.CrashReq\
     uest\x1a\x0e.CrashResponse\"\0b\x06proto3\
 ";
 

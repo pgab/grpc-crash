@@ -9,6 +9,6 @@ message CrashRequest {
 }
 
 message CrashResponse {
-    repeated float payload = 1;
+    bytes payload = 1;
 }
 

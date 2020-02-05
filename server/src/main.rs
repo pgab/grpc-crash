@@ -71,7 +71,7 @@ impl grpc_gen::CrashService for CrashGrpcServer {
             let mut ret = Vec::with_capacity(size);
             let mut cnt = 0;
             while cnt < size {
-                ret.push((cnt%8) as f32);
+                ret.push((cnt%8) as u8);
                 cnt += 1;
             }
             result.set_payload(ret);

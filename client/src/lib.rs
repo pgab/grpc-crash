@@ -84,6 +84,6 @@ pub struct CrashRequest {
 }
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct CrashResponse {
-    pub payload: Vec<f32>,
+    pub payload: Vec<u8>,
 }
 

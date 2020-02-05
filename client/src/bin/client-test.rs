@@ -3,10 +3,10 @@
 use client::*;
 
 fn crash(client: &Client) {
-    let size = 1024*1024*1024;
+    let size = 1024*1024*1024*4;
     let resp = client.crash(CrashRequest { size });
     if let Ok(resp) = resp {
-       println!("{:?} MiB", resp.payload.len()/(4*1024*1024));
+       println!("{:?} MiB", resp.payload.len()/(1024*1024));
     } else {
         println!("{:?}", resp);
     };

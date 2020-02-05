@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service CrashService {
+    rpc Crash(CrashRequest) returns (CrashResponse) {}
+}
+
+message CrashRequest {
+    uint64 size = 1;
+}
+
+message CrashResponse {
+    repeated float payload = 1;
+}
+

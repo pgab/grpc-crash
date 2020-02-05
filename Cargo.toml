@@ -1,0 +1,11 @@
+[workspace]
+
+members = [
+    "client",
+    "server",
+]
+
+[patch.crates-io]
+
+httpbis = { git = "https://github.com/GiGainfosystems/rust-http2", rev = "1d0fb83" }
+grpc = { git = "https://github.com/GiGainfosystems/grpc-rust", rev = "4cd6061" }

@@ -1,19 +1,20 @@
 
-
-use crate::crash as proto_gen;
-use crate::crash_grpc as grpc_gen;
+use tonic::{transport::Server, Request, Response, Status};
 use chrono::{DateTime, Local, SecondsFormat};
 use clap::{crate_authors, crate_version};
 use env_logger;
 use std::env;
 use std::io::Write;
 
-use log::{debug, info};
+use log::{debug};
 
-#[allow(warnings)]
-mod crash;
-#[allow(warnings)]
-mod crash_grpc;
+use crash::crash_service_server::{CrashService, CrashServiceServer};
+use crash::{CrashRequest, CrashResponse};
+
+pub mod crash {
+    tonic::include_proto!("crash");
+}
+
 mod config;
 
 
@@ -47,7 +48,7 @@ pub fn make_builder(max_level: Option<log::LevelFilter>) -> env_logger::Builder 
     builder
 }
 
-
+#[derive(Default)]
 pub struct CrashGrpcServer {
 }
 
@@ -58,30 +59,31 @@ impl CrashGrpcServer {
 
 }
 
-impl grpc_gen::CrashService for CrashGrpcServer {
-    fn crash(
+#[tonic::async_trait]
+impl CrashService for CrashGrpcServer {
+    async fn crash(
         &self,
-        _o: grpc::RequestOptions,
-        p: proto_gen::CrashRequest,
-    ) -> grpc::SingleResponse<proto_gen::CrashResponse> {
+        p: Request<CrashRequest>,
+    ) -> Result<Response<CrashResponse>, Status> {
         debug!("crash({:?})", p);
-        grpc::SingleResponse::no_metadata(futures::future::result({
-            let size = p.get_size() as usize;
-            let mut result = proto_gen::CrashResponse::new();
-            let mut ret = Vec::with_capacity(size);
-            let mut cnt = 0;
-            while cnt < size {
-                ret.push((cnt%8) as u8);
-                cnt += 1;
-            }
-            result.set_payload(ret);
-            Ok(result)
-        }))
+        let size = p.into_inner().size as usize;
+
+        let mut payload = Vec::with_capacity(size);
+        let mut cnt = 0;
+        while cnt < size {
+            payload.push((cnt%8) as u8);
+            cnt += 1;
+        }
+        let result = crash::CrashResponse {
+            payload
+        };
+        Ok(Response::new(result))
     }
 
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
     let matches = clap::App::new("Server")
         .version(crate_version!())
@@ -129,17 +131,10 @@ fn main() {
             eprintln!("{}", e);
             std::process::exit(1);
         });
-    let mut server = grpc::ServerBuilder::new_plain();
-    server.add_service(grpc_gen::CrashServiceServer::new_service_def(
-        borehole_service,
-    ));
-    server.http.set_addr(socket_addr).unwrap_or_else(|e| {
-        eprintln!("{}", e);
-        std::process::exit(1);
-    });
-    let _server = server.build().expect("server");
-    info!("Server ready. Listening on {}.", _server.local_addr());
-    loop {
-        std::thread::park();
-    }
+    let mut server = Server::builder();
+    let server = server.add_service(CrashServiceServer::new(borehole_service));
+    server.serve(socket_addr)
+        .await?;
+        Ok(())
+
 }

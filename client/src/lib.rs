@@ -1,45 +1,48 @@
-use crate::crash as proto_gen;
-use crate::crash_grpc as grpc_gen;
-use grpc::ClientStubExt;
-use grpc_gen::{CrashService, CrashServiceClient};
+
+use crash::crash_service_client::{CrashServiceClient};
+use crash::{CrashRequest as CR};
+
+pub mod crash {
+    tonic::include_proto!("crash");
+}
+
 use serde::{Deserialize, Serialize};
 
-#[allow(warnings)]
-mod crash;
-#[allow(warnings)]
-mod crash_grpc;
+use tonic::{transport::Channel};
+
 
 pub struct Client {
-    service: CrashServiceClient,
+    service: crash::crash_service_client::CrashServiceClient<Channel>,
 }
 
 impl Client {
-    pub fn new(host: &str, port: u16) -> Result<Self, Error> {
+    pub async fn new(host: &str, port: u16) -> Result<Self, Error> {
+        let connect_string = format!("http://{host}:{port}", host=host, port=port);
         let service =
-            CrashServiceClient::new_plain(host, port, Default::default()).map_err(|e| {
-                Error {
+            CrashServiceClient::connect(connect_string)
+                .await
+                .map_err(|e| Error {
                     kind: ErrorKind::Internal,
                     message: e.to_string(),
-                }
-            })?;
+                })?;
         Ok(Self { service })
     }
 
-    pub fn crash(
-        &self,
+    pub async fn crash(
+        &mut self,
         params: CrashRequest,
     ) -> Result<CrashResponse, Error> {
-        let mut request = proto_gen::CrashRequest::new();
-        request.set_size(params.size);
+        let request = tonic::Request::new(CR {
+            size: params.size
+        });
         let resp = self
             .service
-            .crash(Default::default(), request);
-        resp.wait_drop_metadata()
-            .map_err(map_request_error)
-            .map(|mut resp| {
-                let payload = resp.take_payload();
-                CrashResponse { payload }
-            })
+            .crash(request).await
+            .map_err(|e| Error {
+                kind: ErrorKind::Internal,
+                message: e.to_string(),
+            })?;
+        Ok(CrashResponse { payload: resp.into_inner().payload })
     }
 
 
@@ -58,23 +61,15 @@ pub struct Error {
     pub message: String,
 }
 
-fn map_request_error(error: grpc::Error) -> Error {
-    match error {
-        grpc::Error::GrpcMessage(grpc_error) => {
-            let kind = if grpc_error.grpc_status == grpc::GrpcStatus::NotFound as i32 {
-                ErrorKind::NotFound
-            } else if grpc_error.grpc_status == grpc::GrpcStatus::Argument as i32 {
-                ErrorKind::InvalidArgument
-            } else {
-                ErrorKind::Internal
-            };
-            let message = grpc_error.grpc_message;
-            Error { kind, message }
-        }
-        _ => Error {
-            kind: ErrorKind::Internal,
-            message: error.to_string(),
-        },
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::error::Error for Error {
+    fn description(&self) -> &str {
+        self.message.as_str()
     }
 }
 

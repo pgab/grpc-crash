@@ -2,20 +2,24 @@
 
 use client::*;
 
-fn crash(client: &Client) {
+async fn crash(client: &mut Client) -> Result<(), Box<dyn std::error::Error>> {
     let size = 1024*1024*1024*4;
-    let resp = client.crash(CrashRequest { size });
-    if let Ok(resp) = resp {
-       println!("{:?} MiB", resp.payload.len()/(1024*1024));
-    } else {
-        println!("{:?}", resp);
-    };
-    return;
+    let resp = client.crash(CrashRequest { size })
+        .await
+        .map_err(|e| Error {
+            kind: ErrorKind::Internal,
+            message: format!("{:?}", e),
+
+        })?;
+    println!("{:?} MiB", resp.payload.len());
+    Ok(())
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
-    let client = Client::new("::1", 50056).unwrap();
-    crash(&client)
+    let mut client = Client::new("localhost", 50056).await?;
+    crash(&mut client).await?;
+    Ok(())
 }

@@ -16,6 +16,6 @@ fn crash(client: &Client) {
 fn main() {
     env_logger::init();
 
-    let client = Client::new("::1", 50056).unwrap();
+    let client = Client::new("localhost", 50056).unwrap();
     crash(&client)
 }

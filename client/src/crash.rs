@@ -355,8 +355,9 @@ impl ::protobuf::reflect::ProtobufValue for CrashResponse {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n\x0bcrash.proto\"\"\n\x0cCrashRequest\x12\x12\n\x04size\x18\x01\x20\
     \x01(\x04R\x04size\")\n\rCrashResponse\x12\x18\n\x07payload\x18\x01\x20\
-    \x01(\x0cR\x07payload28\n\x0cCrashService\x12(\n\x05Crash\x12\r.CrashReq\
-    uest\x1a\x0e.CrashResponse\"\0b\x06proto3\
+    \x01(\x0cR\x07payload2e\n\x0cCrashService\x12(\n\x05Crash\x12\r.CrashReq\
+    uest\x1a\x0e.CrashResponse\"\0\x12+\n\x06Stream\x12\r.CrashRequest\x1a\
+    \x0e.CrashResponse\"\00\x01b\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

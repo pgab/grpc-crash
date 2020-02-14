@@ -23,6 +23,8 @@
 
 pub trait CrashService {
     fn crash(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::SingleResponse<super::crash::CrashResponse>;
+
+    fn stream(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::StreamingResponse<super::crash::CrashResponse>;
 }
 
 // client
@@ -30,6 +32,7 @@ pub trait CrashService {
 pub struct CrashServiceClient {
     grpc_client: ::std::sync::Arc<::grpc::Client>,
     method_Crash: ::std::sync::Arc<::grpc::rt::MethodDescriptor<super::crash::CrashRequest, super::crash::CrashResponse>>,
+    method_Stream: ::std::sync::Arc<::grpc::rt::MethodDescriptor<super::crash::CrashRequest, super::crash::CrashResponse>>,
 }
 
 impl ::grpc::ClientStub for CrashServiceClient {
@@ -42,6 +45,12 @@ impl ::grpc::ClientStub for CrashServiceClient {
                 req_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
                 resp_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
             }),
+            method_Stream: ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
+                name: "/CrashService/Stream".to_string(),
+                streaming: ::grpc::rt::GrpcStreaming::ServerStreaming,
+                req_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
+                resp_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
+            }),
         }
     }
 }
@@ -49,6 +58,10 @@ impl ::grpc::ClientStub for CrashServiceClient {
 impl CrashService for CrashServiceClient {
     fn crash(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::SingleResponse<super::crash::CrashResponse> {
         self.grpc_client.call_unary(o, p, self.method_Crash.clone())
+    }
+
+    fn stream(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::StreamingResponse<super::crash::CrashResponse> {
+        self.grpc_client.call_server_streaming(o, p, self.method_Stream.clone())
     }
 }
 
@@ -72,6 +85,18 @@ impl CrashServiceServer {
                     {
                         let handler_copy = handler_arc.clone();
                         ::grpc::rt::MethodHandlerUnary::new(move |o, p| handler_copy.crash(o, p))
+                    },
+                ),
+                ::grpc::rt::ServerMethod::new(
+                    ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
+                        name: "/CrashService/Stream".to_string(),
+                        streaming: ::grpc::rt::GrpcStreaming::ServerStreaming,
+                        req_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
+                        resp_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
+                    }),
+                    {
+                        let handler_copy = handler_arc.clone();
+                        ::grpc::rt::MethodHandlerServerStreaming::new(move |o, p| handler_copy.stream(o, p))
                     },
                 ),
             ],

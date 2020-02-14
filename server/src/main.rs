@@ -1,21 +1,20 @@
-
-
 use crate::crash as proto_gen;
 use crate::crash_grpc as grpc_gen;
 use chrono::{DateTime, Local, SecondsFormat};
 use clap::{crate_authors, crate_version};
 use env_logger;
+use std::convert::TryInto;
 use std::env;
 use std::io::Write;
+use std::iter;
 
 use log::{debug, info};
 
+mod config;
 #[allow(warnings)]
 mod crash;
 #[allow(warnings)]
 mod crash_grpc;
-mod config;
-
 
 // Setup `env_logger` builder with our log format
 pub fn make_builder(max_level: Option<log::LevelFilter>) -> env_logger::Builder {
@@ -47,15 +46,12 @@ pub fn make_builder(max_level: Option<log::LevelFilter>) -> env_logger::Builder 
     builder
 }
 
-
-pub struct CrashGrpcServer {
-}
+pub struct CrashGrpcServer {}
 
 impl CrashGrpcServer {
     pub fn create() -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {})
     }
-
 }
 
 impl grpc_gen::CrashService for CrashGrpcServer {
@@ -71,7 +67,7 @@ impl grpc_gen::CrashService for CrashGrpcServer {
             let mut ret = Vec::with_capacity(size);
             let mut cnt = 0;
             while cnt < size {
-                ret.push((cnt%8) as u8);
+                ret.push((cnt % 8) as u8);
                 cnt += 1;
             }
             result.set_payload(ret);
@@ -79,6 +75,28 @@ impl grpc_gen::CrashService for CrashGrpcServer {
         }))
     }
 
+    fn stream(
+        &self,
+        _o: grpc::RequestOptions,
+        p: proto_gen::CrashRequest,
+    ) -> ::grpc::StreamingResponse<proto_gen::CrashResponse> {
+        let size = p.get_size();
+        let num_packages = size / (1024 * 1024 * 1);
+        let mut payload = Vec::with_capacity(num_packages.try_into().unwrap());
+        let mut cnt = 0;
+        while cnt < size / num_packages {
+            payload.push((cnt % 8) as u8);
+            cnt += 1;
+        }
+        let iter = iter::repeat(())
+            .map(move |_| {
+                let mut resp = proto_gen::CrashResponse::new();
+                resp.set_payload(payload.to_owned());
+                resp
+            })
+            .take(num_packages.try_into().unwrap());
+        grpc::StreamingResponse::iter(iter)
+    }
 }
 
 fn main() {
@@ -98,7 +116,7 @@ fn main() {
             clap::Arg::with_name("verbose")
                 .short("v")
                 .multiple(true)
-                .help("Verbose logging")
+                .help("Verbose logging"),
         )
         .get_matches();
 
@@ -124,15 +142,12 @@ fn main() {
         eprintln!("{}", e);
         std::process::exit(1);
     });
-    let borehole_service =
-        CrashGrpcServer::create().unwrap_or_else(|e| {
-            eprintln!("{}", e);
-            std::process::exit(1);
-        });
+    let crash_service = CrashGrpcServer::create().unwrap_or_else(|e| {
+        eprintln!("{}", e);
+        std::process::exit(1);
+    });
     let mut server = grpc::ServerBuilder::new_plain();
-    server.add_service(grpc_gen::CrashServiceServer::new_service_def(
-        borehole_service,
-    ));
+    server.add_service(grpc_gen::CrashServiceServer::new_service_def(crash_service));
     server.http.set_addr(socket_addr).unwrap_or_else(|e| {
         eprintln!("{}", e);
         std::process::exit(1);

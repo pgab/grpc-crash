@@ -24,18 +24,6 @@ impl Client {
         Ok(Self { service })
     }
 
-    pub fn crash(&self, params: CrashRequest) -> Result<CrashResponse, Error> {
-        let mut request = proto_gen::CrashRequest::new();
-        request.set_size(params.size);
-        let resp = self.service.crash(Default::default(), request);
-        resp.wait_drop_metadata()
-            .map_err(map_request_error)
-            .map(|mut resp| {
-                let payload = resp.take_payload();
-                CrashResponse { payload }
-            })
-    }
-
     pub fn stream(&self, params: CrashRequest) -> Result<(), Error> {
         let mut req = proto_gen::CrashRequest::new();
         req.set_size(params.size);
@@ -71,6 +59,7 @@ pub struct Error {
     pub message: String,
 }
 
+#[allow(dead_code)]
 fn map_request_error(error: grpc::Error) -> Error {
     match error {
         grpc::Error::GrpcMessage(grpc_error) => {

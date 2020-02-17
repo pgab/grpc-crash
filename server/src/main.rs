@@ -8,7 +8,7 @@ use std::env;
 use std::io::Write;
 use std::iter;
 
-use log::{debug, info};
+use log::{info};
 
 mod config;
 #[allow(warnings)]
@@ -55,25 +55,6 @@ impl CrashGrpcServer {
 }
 
 impl grpc_gen::CrashService for CrashGrpcServer {
-    fn crash(
-        &self,
-        _o: grpc::RequestOptions,
-        p: proto_gen::CrashRequest,
-    ) -> grpc::SingleResponse<proto_gen::CrashResponse> {
-        debug!("crash({:?})", p);
-        grpc::SingleResponse::no_metadata(futures::future::result({
-            let size = p.get_size() as usize;
-            let mut result = proto_gen::CrashResponse::new();
-            let mut ret = Vec::with_capacity(size);
-            let mut cnt = 0;
-            while cnt < size {
-                ret.push((cnt % 8) as u8);
-                cnt += 1;
-            }
-            result.set_payload(ret);
-            Ok(result)
-        }))
-    }
 
     fn stream(
         &self,

@@ -22,8 +22,6 @@
 // interface
 
 pub trait CrashService {
-    fn crash(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::SingleResponse<super::crash::CrashResponse>;
-
     fn stream(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::StreamingResponse<super::crash::CrashResponse>;
 }
 
@@ -31,7 +29,6 @@ pub trait CrashService {
 
 pub struct CrashServiceClient {
     grpc_client: ::std::sync::Arc<::grpc::Client>,
-    method_Crash: ::std::sync::Arc<::grpc::rt::MethodDescriptor<super::crash::CrashRequest, super::crash::CrashResponse>>,
     method_Stream: ::std::sync::Arc<::grpc::rt::MethodDescriptor<super::crash::CrashRequest, super::crash::CrashResponse>>,
 }
 
@@ -39,12 +36,6 @@ impl ::grpc::ClientStub for CrashServiceClient {
     fn with_client(grpc_client: ::std::sync::Arc<::grpc::Client>) -> Self {
         CrashServiceClient {
             grpc_client: grpc_client,
-            method_Crash: ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
-                name: "/CrashService/Crash".to_string(),
-                streaming: ::grpc::rt::GrpcStreaming::Unary,
-                req_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
-                resp_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
-            }),
             method_Stream: ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
                 name: "/CrashService/Stream".to_string(),
                 streaming: ::grpc::rt::GrpcStreaming::ServerStreaming,
@@ -56,10 +47,6 @@ impl ::grpc::ClientStub for CrashServiceClient {
 }
 
 impl CrashService for CrashServiceClient {
-    fn crash(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::SingleResponse<super::crash::CrashResponse> {
-        self.grpc_client.call_unary(o, p, self.method_Crash.clone())
-    }
-
     fn stream(&self, o: ::grpc::RequestOptions, p: super::crash::CrashRequest) -> ::grpc::StreamingResponse<super::crash::CrashResponse> {
         self.grpc_client.call_server_streaming(o, p, self.method_Stream.clone())
     }
@@ -75,18 +62,6 @@ impl CrashServiceServer {
         let handler_arc = ::std::sync::Arc::new(handler);
         ::grpc::rt::ServerServiceDefinition::new("/CrashService",
             vec![
-                ::grpc::rt::ServerMethod::new(
-                    ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
-                        name: "/CrashService/Crash".to_string(),
-                        streaming: ::grpc::rt::GrpcStreaming::Unary,
-                        req_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
-                        resp_marshaller: Box::new(::grpc::protobuf::MarshallerProtobuf),
-                    }),
-                    {
-                        let handler_copy = handler_arc.clone();
-                        ::grpc::rt::MethodHandlerUnary::new(move |o, p| handler_copy.crash(o, p))
-                    },
-                ),
                 ::grpc::rt::ServerMethod::new(
                     ::std::sync::Arc::new(::grpc::rt::MethodDescriptor {
                         name: "/CrashService/Stream".to_string(),

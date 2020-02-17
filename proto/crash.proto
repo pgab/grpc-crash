@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 service CrashService {
-    rpc Crash(CrashRequest) returns (CrashResponse) {}
     rpc Stream(CrashRequest) returns (stream CrashResponse) {}
 }
 

@@ -1,3 +1,5 @@
+#![feature(test)]
+
 use crate::crash as proto_gen;
 use crate::crash_grpc as grpc_gen;
 use grpc::ClientStubExt;
@@ -9,6 +11,11 @@ use std::time::SystemTime;
 mod crash;
 #[allow(warnings)]
 mod crash_grpc;
+
+extern crate test as bench;
+
+#[cfg(test)]
+mod test;
 
 pub struct Client {
     service: CrashServiceClient,

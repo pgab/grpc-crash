@@ -38,10 +38,25 @@ ip = "::"
 port = 50066
 ```
 
+Note: Put your CPU into "performance" mode:
+```bash
+# find the available modes
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+performance powersave
+# find the current mode
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+powersave
+# set to performance mode
+$ echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+performance
+# check that nothing resets to powersave
+$ watch -n 1 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+```
+
 Test Results
 ============
 
 CPU | RAM | Disk | OS | Kernel | Data size | Timing
 --- | --- | --- | --- | --- | --- | ---
-i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 | 4.15.0-76-generic #86-Ubuntu SMP | 5,120 MiB | 23.196666541s
-i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 |  4.15.0-76-generic #86-Ubuntu SMP | 10,240 MiB | 60.057229252s
+i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 | 4.15.0-76-generic #86-Ubuntu SMP | 5,120 MiB | 20.408155579s
+i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 |  4.15.0-76-generic #86-Ubuntu SMP | 10,240 MiB | 29.257998462s

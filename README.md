@@ -56,7 +56,7 @@ $ watch -n 1 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 Test Results
 ============
 
-CPU | RAM | Disk | OS | Kernel | Data size | Timing
+CPU | RAM | Disk | OS | Kernel | Connection Type | Timing
 --- | --- | --- | --- | --- | --- | ---
-i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 | 4.15.0-76-generic #86-Ubuntu SMP | 5,120 MiB | 20.408155579s
-i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 |  4.15.0-76-generic #86-Ubuntu SMP | 10,240 MiB | 29.257998462s
+i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 | 4.15.0-76-generic #86-Ubuntu SMP | local/loopback | 17.903s
+AMD Ryzen 7 2700 | 16 GiB | SSD | Ubuntu 18.04 |  4.15.0-76-generic #86-Ubuntu SMP | local/loopback | 12.608s

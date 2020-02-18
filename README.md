@@ -61,3 +61,7 @@ CPU | RAM | Disk | OS | Kernel | Connection Type | Timing
 i5-3320M CPU @ 2.60GHz | 16 GiB | SSD | Ubuntu 18.04 | 4.15.0-76-generic #86-Ubuntu SMP | local/loopback | 17.903s
 AMD Ryzen 7 2700 | 16 GiB | SSD | Ubuntu 18.04 |  4.15.0-76-generic #86-Ubuntu SMP | local/loopback | 12.608s
 i7-8700B CPU @ 3.20GHz | 16 GiB | SSD | macOS 10.14.6 | XNU | local/loopback | 6.869s
+E5-2630 v3 @ 2.40GHz (performance[sic]) | 125 GiB | SAS | Ubuntu 18.04 | 4.15.0-72-generic #81-Ubuntu SMP | local/loopback | 35.200s
+E5-2630 v3 @ 2.40GHz (powersave[sic]) | 125 GiB | SAS | Ubuntu 18.04 | 4.15.0-72-generic #81-Ubuntu SMP | local/loopback | 23.961s
+E3-1240 v5 @ 3.50GHz | 15 GiB | HDD | Ubuntu 16.04.5 | 4.4.0-112-generic #135-Ubuntu SMP | local/loopback | 18.386s
+

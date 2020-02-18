@@ -64,4 +64,4 @@ i7-8700B CPU @ 3.20GHz | 16 GiB | SSD | macOS 10.14.6 | XNU | local/loopback | 6
 E5-2630 v3 @ 2.40GHz (performance[sic]) | 125 GiB | SAS | Ubuntu 18.04 | 4.15.0-72-generic #81-Ubuntu SMP | local/loopback | 35.200s
 E5-2630 v3 @ 2.40GHz (powersave[sic]) | 125 GiB | SAS | Ubuntu 18.04 | 4.15.0-72-generic #81-Ubuntu SMP | local/loopback | 23.961s
 E3-1240 v5 @ 3.50GHz | 15 GiB | HDD | Ubuntu 16.04.5 | 4.4.0-112-generic #135-Ubuntu SMP | local/loopback | 18.386s
-
+i7-7500U CPU @ 2.70GHz | 16 GiB | SSD (NVM) | Ubuntu 19.10 | 5.3.0-29-generic #31-Ubuntu SMP | local/loopback | 8.686s 

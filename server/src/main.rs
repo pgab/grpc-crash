@@ -8,7 +8,7 @@ use std::env;
 use std::io::Write;
 use std::iter;
 
-use log::{info};
+use log::info;
 
 mod config;
 #[allow(warnings)]
@@ -55,7 +55,6 @@ impl CrashGrpcServer {
 }
 
 impl grpc_gen::CrashService for CrashGrpcServer {
-
     fn stream(
         &self,
         _o: grpc::RequestOptions,
